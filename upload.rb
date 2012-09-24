@@ -29,6 +29,9 @@ sets=flickr.get_list(uid)
 # config["photos_base_path"]
 
 ARGV.each do |phdir|
+  Dir.open("#{config["photos_base_path"]}/#{phdir}").each do |d|
+  
+ARGV.each do |phdir|
   AVI|avi|mov|MOV
   IO.popen("find #{path}/#{phdir} -name '*.JPG*' -o -name '*.jpg*' -o -name '*.png*'", "r") do |p|
   p.each do |line|
