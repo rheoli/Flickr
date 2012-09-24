@@ -1,0 +1,5 @@
+#=Flickr API Keys
+api_key:    "88ff"
+shared_secret: "77f"
+auth_token: "87ff-444f"
+photos_base_path: "/My/Photo/Library"
