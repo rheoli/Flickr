@@ -28,36 +28,51 @@ sets=flickr.get_list(uid)
 
 # config["photos_base_path"]
 
-ARGV.each do |phdir|
-  Dir.open("#{config["photos_base_path"]}/#{phdir}").each do |d|
-  
-ARGV.each do |phdir|
-  AVI|avi|mov|MOV
-  IO.popen("find #{path}/#{phdir} -name '*.JPG*' -o -name '*.jpg*' -o -name '*.png*'", "r") do |p|
-  p.each do |line|
-    file=line.chomp
-p file
-    if file=~/\.(JPG|jpg|png)$/
-      photos<<file
+$photos={}
+
+def loop(_dir)
+  Dir.open(_dir).each do |d|
+    next if d=~/^\./
+    path="#{_dir}/#{d}"
+    if File.directory?(path)
+      loop(path)
     else
-      photos_id<<file
+      if path=~/^(.+\.(jpg|JPG|png|PNG|mov|MOV|avi|AVI))(\.([0-9]+))?$/
+        photo=$1; id=$4
+        $photos[photo]=id
+      end
     end
   end
-end
 end
 
-photos_id.each do |p|
-  if p=~/^(.+\.(JPG|jpg|png))\.([a-zA-Z0-9]+)$/
-    file=$1
-#print "#{file}\n"
-    if photos.include?(file)
-      photos.delete(file)
-#     print "delete #{file}\n"
-    else
-      print "not found #{file} ???\n"
+ARGV.each do |phdir|
+  loop("#{config["photos_base_path"]}/#{phdir}")
+end
+
+$photos.each do |photo, id|
+  if id.nil?
+    #-Upload
+    puts "Upload #{photo}"
+    if photo=~/^#{config["photos_base_path"]}\/([A-Za-z\/]+)\/([0-9]+)\/(.+)$/
+      name=$1; date=$2
+      tags=name.gsub(/\//,' ')
+      name.gsub!(/\//,'')
+      photo_id=flickr.post_photo(photo, {:title=>name, :tags=>tags.downcase})
+      system("touch #{photo}.#{photo_id}")
+      if sets[name].nil?
+        puts " - create set #{name}"
+        set_id=flickr.create_set(name, photo_id)
+        sets[name]=set_id
+      else
+        puts " - add to set #{name}"
+        flickr.add_photo(sets[name], photo_id)
+      end
     end
   end
 end
+
+exit
+
 
 photos.each do |file|
     if file=~/\/([a-zA-Z0-9_]+)\/([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)\.(JPG|jpg|png)$/

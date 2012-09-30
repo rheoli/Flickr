@@ -26,7 +26,7 @@ class Flickr
     if _sign
       _options[:auth_token]=@auth_token
       psign=_options.collect { |a, b| "#{a}#{b}" }.sort.join
-      p psign
+      #p psign
       _options[:api_sig]=Digest::MD5.hexdigest(@@shared_secret+psign)
     end
     params=_options.collect { |a, b| "#{a}=#{b}" }.join("&")
@@ -78,7 +78,7 @@ class Flickr
 
   def create_set(_title, _photo_id)
     res=call_rest("flickr.photosets.create", {:title=>_title, :primary_photo_id=>_photo_id}, true, true)
-    p res
+    #p res
     doc = REXML::Document.new res
     if doc.root.attributes["stat"]=="ok"
       return doc.root.elements["photoset"].attributes["id"]
