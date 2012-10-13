@@ -53,7 +53,7 @@ $photos.each do |photo, id|
   if id.nil?
     #-Upload
     puts "Upload #{photo}"
-    if photo=~/^#{config["photos_base_path"]}\/([A-Za-z\/]+)\/([0-9]+)\/(.+)$/
+    if photo=~/^#{config["photos_base_path"]}\/([A-Za-z\/]+)\/([0-9_]+)\/(.+)$/
       name=$1; date=$2
       tags=name.gsub(/\//,' ')
       name.gsub!(/\//,'')
