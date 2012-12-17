@@ -37,7 +37,8 @@ def loop(_dir)
     if File.directory?(path)
       loop(path)
     else
-      if path=~/^(.+\.(jpg|JPG|png|PNG|mov|MOV|avi|AVI))(\.([0-9]+))?$/
+      #jpg|JPG|png|PNG|mov|MOV|avi|AVI
+      if path=~/^(.+\.(jpg|JPG|png|PNG))(\.([0-9]+))?$/
         photo=$1; id=$4
         $photos[photo]=id
       end
