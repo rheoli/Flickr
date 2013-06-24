@@ -56,9 +56,10 @@ $photos.each do |photo, id|
     puts "Upload #{photo}"
     if photo=~/^#{config["photos_base_path"]}\/([A-Za-z\/]+)\/([0-9_]+)\/(.+)$/
       name=$1; date=$2
-      tags=name.gsub(/\//,' ')
-      name.gsub!(/\//,'')
-      photo_id=flickr.post_photo(photo, {:title=>name, :tags=>tags.downcase})
+      puts "#{name} / #{date}"
+      tags = name.split(/\//)
+      name = tags[0]
+      photo_id=flickr.post_photo(photo, {:title=>name, :tags=>tags.join(' ').downcase})
       system("touch #{photo}.#{photo_id}")
       if sets[name].nil?
         puts " - create set #{name}"
@@ -68,29 +69,10 @@ $photos.each do |photo, id|
         puts " - add to set #{name}"
         flickr.add_photo(sets[name], photo_id)
       end
+    else
+      puts " -> not in regex found"
     end
   end
-end
-
-exit
-
-
-photos.each do |file|
-    if file=~/\/([a-zA-Z0-9_]+)\/([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)\.(JPG|jpg|png)$/
-      title=$1
-      photo_id=Flickr.post_photo(file, {:title=>title, :tags=>title.downcase})
-      next if photo_id.nil?
-      print "#{file} uploaded.\n"
-      system("touch #{file}.#{photo_id}")
-      if sets[title].nil?
-        set_id=Flickr.create_set(title, photo_id)
-        sets[title]=set_id
-      else
-        Flickr.add_photo(sets[title], photo_id)
-      end
-    else
-      print "#{file} not found.\n"
-    end
 end
 
 #=EOF
